@@ -3,7 +3,8 @@
 </p>
 
 
-  <p align="center">Un proyecto pensado para la organizacion colectiva en el pais, para conectar voluntarios con organizaciones que quieren aportar a la sociedad.</p>
+  <p align="center"> 🇬🇹 Un proyecto pensado para la organizacion colectiva en el pais, para conectar voluntarios con organizaciones que quieren aportar a la sociedad.</p>
+  <p align="center"> 🇺🇸 A project designed to foster collective organization within the country, connecting volunteers with organizations seeking to make a social impact.</p>
     <p align="center">
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
 <a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
