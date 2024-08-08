@@ -21,17 +21,17 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Descripcion
+## Description/Descripcion
 
 Repositorio de servicios de la app/web. Creado en Nestjs, compatible con motores de db SQL.
 
-## Instalacion
+## Installation/Instalacion
 
 ```bash
 $ npm install
 ```
 
-## Ejecutar la app
+## Running App/Ejecutar la app
 
 ```bash
 # development
@@ -44,7 +44,7 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Pruebas
+## Testing/Pruebas
 
 ```bash
 # unit tests
@@ -57,16 +57,15 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
-## Soporte
+
+## Features
+- Update health check for Database & Disk.
+
+## Support/Soporte
 
 ContribuGuate es un proyecto con licencia MIT (open source).
 
-<!-- ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework) -->
-
-## Licencia
+## License/Licencia
 
 ContribuGuate es [Licencia MIT](LICENSE).

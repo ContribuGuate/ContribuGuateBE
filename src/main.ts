@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,15 +18,30 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
+  app.setGlobalPrefix('/api/contribuguate/v1');
+  
   const options: SwaggerCustomOptions = {
-    customSiteTitle: 'Contribuguate API'
+    customSiteTitle: 'Contribuguate API',
+    useGlobalPrefix: true
   }
   SwaggerModule.setup('api', app, document, options);
 
 
   app.enableCors();
-  app.setGlobalPrefix('/api/contribuguate/v1');
+  
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(3000);
+  app.use(helmet());
+
+  const configService = new ConfigService();
+  const port = configService.getOrThrow<number>('APP_PORT', 3000);
+
+  await app.listen(port)
+  .then(() => {
+    Logger.log(`Server running on port ${port}`, "Http - Application");
+  })
+  .catch((err) => {
+    Logger.error(err, "Http - Application");
+  })
+
 }
 bootstrap();
