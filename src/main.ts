@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
+import { ExceptionsLoggerFilter } from './tools/error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -34,6 +35,8 @@ async function bootstrap() {
 
   const configService = new ConfigService();
   const port = configService.getOrThrow<number>('APP_PORT', 3000);
+
+  app.useGlobalFilters(new ExceptionsLoggerFilter());
 
   await app.listen(port)
   .then(() => {
