@@ -14,6 +14,7 @@ import { RoleModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { Role } from './modules/role/role.entity';
 import { Permission } from './modules/permission/permission.entity';
+import { Person } from './modules/auth/person.entity';
 
 @Module({
   imports: [
@@ -28,11 +29,14 @@ import { Permission } from './modules/permission/permission.entity';
       port: 1433,
       username: 'sa',
       password: 'admin123',
-      entities: [User, Organization, Community, CommunityMembership, Role, Permission],
+      entities: [User, Person, Organization, Community, CommunityMembership, Role, Permission],
       synchronize: true,
       database: 'contribuguate',
       extra: {
         trustServerCertificate: true
+      },
+      options: {
+        useUTC: true
       }
     }),
     AuthModule, 

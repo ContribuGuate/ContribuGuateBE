@@ -20,6 +20,9 @@ export class Community{
     @Column({ type: 'bit', default: true })
     public: boolean;
 
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    password: string;
+
     @ManyToOne(() => Organization, organization => organization.communities, { nullable: false })
     organization: Organization;
 

@@ -22,7 +22,7 @@ export class OrganizationService{
         const organization = new Organization();
         organization.shortid = alpha(16);
         organization.name = request.name;
-        organization.description = request.description;
+        organization.description = request.description ?? null;
         organization.image = file.filename;
         organization.website = request.website;
         organization.contact = request.contact;
