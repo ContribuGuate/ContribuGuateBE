@@ -26,14 +26,14 @@ export class AuthService {
 
         if (!find) {
             response.success = false;
-            response.message = 'User not found';
+            response.message = 'El usuario no existe';
             return response;
         } else {
             const comparision = await this.passwordService.comparePassword(request.password, find.password);
 
             if (comparision) {
                 response.success = true;
-                response.message = 'Session started';
+                response.message = 'Sesion iniciada correctamente';
 
                 var payload = {
                     sub: find.uuid
@@ -54,7 +54,7 @@ export class AuthService {
                 return response;
             } else {
                 response.success = false;
-                response.message = 'Password doesnt match';
+                response.message = 'La contraseña es incorrecta';
                 return response;
             }
         }
@@ -73,7 +73,7 @@ export class AuthService {
 
             if (find) {
                 response.success = false;
-                response.message = 'User already exists';
+                response.message = 'El usuario ya existe';
                 return response;
             } else {
                 var person = new Person();
@@ -101,7 +101,7 @@ export class AuthService {
                 user.password = await this.passwordService.hashPassword(request.password);
                 await this.userRepository.save(user);
                 response.success = true;
-                response.message = 'User created successfully';
+                response.message = 'Usuario creado correctamente';
                 response.user = user;
                 response.person = person;
                 return response;

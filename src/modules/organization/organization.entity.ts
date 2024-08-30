@@ -5,11 +5,7 @@ import { Community } from '../community/community.entity';
 export class Organization {
     @PrimaryGeneratedColumn('uuid')
     uuid: string;
-
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    @Index()
-    shortid: string;
-
+    
     @Column({ type: 'varchar', length: 255, nullable: false })
     name: string;
 

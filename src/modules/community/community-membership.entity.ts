@@ -8,7 +8,7 @@ export class CommunityMembership{
     @PrimaryGeneratedColumn('uuid')
     uuid: string;
 
-    @ManyToOne(() => Community, community => community.members, { nullable: false })
+    @ManyToOne(() => Community, community => community.communityMemberships, { nullable: false })
     community: Community;
 
     @ManyToOne(() => User, { nullable: false })

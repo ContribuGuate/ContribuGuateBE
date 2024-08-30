@@ -44,6 +44,6 @@ import { Person } from './modules/auth/person.entity';
     HealthModule, CommunityModule, RoleModule, PermissionModule
   ],
   controllers: [],
-  providers: [PasswordService],
+  providers: [PasswordService]
 })
 export class AppModule {}
