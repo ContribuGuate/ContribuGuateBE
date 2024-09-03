@@ -41,7 +41,6 @@ export class OrganizationController {
 
     @Get('logo/:id')
     public async getLogo(@Param('id') id: string) {
-
     }
 
     @Get(':id')

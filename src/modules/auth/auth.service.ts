@@ -112,4 +112,14 @@ export class AuthService {
             return response;
         }
     }
+
+    public async getUser(uid: string){
+        const find = await this.userRepository.findOne({
+            where: {
+                uuid: uid
+            }
+        });
+
+        return find;
+    }
 }

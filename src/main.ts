@@ -31,7 +31,7 @@ async function bootstrap() {
   app.enableCors();
   
   app.useGlobalPipes(new ValidationPipe());
-  app.use(helmet());
+  // app.use(helmet());
 
   const configService = new ConfigService();
   const port = configService.getOrThrow<number>('APP_PORT', 3000);

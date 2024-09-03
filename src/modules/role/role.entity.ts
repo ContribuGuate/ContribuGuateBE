@@ -9,6 +9,9 @@ export class Role {
     @Column({ type: 'varchar', length: 50, unique: true, nullable: false })
     name: string; // e.g., 'owner', 'member', 'admin'
 
+    @Column({ type: 'varchar', nullable: true})
+    label: string;
+
     @Column({ type: 'text', nullable: true })
     description: string;
 

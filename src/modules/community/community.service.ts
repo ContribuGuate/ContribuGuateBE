@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, StreamableFile } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Community } from "./community.entity";
 import { Repository } from "typeorm";
@@ -6,16 +6,27 @@ import { AddCommunityRequest } from "./dto/request/add-community.request";
 import { AddCommunityResponse } from "./dto/response/add-community.response";
 import { GetCommunitiesResponse } from "./dto/response/get-communities.response";
 import { GetCommunityResponse } from "./dto/response/get-community.response";
+import { createReadStream } from "fs";
+import { join } from "path";
+import { PasswordService } from "src/tools/password.service";
+import { JoinCommunityResponse } from "./dto/response/join-community.response";
+import { CommunityMembership } from "./community-membership.entity";
+import { AuthService } from "../auth/auth.service";
+import { RoleService } from "../role/role.service";
 
 @Injectable()
-export class CommunityService{
+export class CommunityService {
 
-    constructor(@InjectRepository(Community) private readonly communityRepository: Repository<Community>){}
+    constructor(@InjectRepository(Community) private readonly communityRepository: Repository<Community>,
+        @InjectRepository(CommunityMembership) private readonly membershipRepository: Repository<CommunityMembership>,
+        private readonly passwordService: PasswordService,
+        private readonly userService: AuthService,
+        private readonly roleService: RoleService) { }
 
-    public async getAllCommunity(){
+    public async getAllCommunity() {
         const response = new GetCommunitiesResponse();
 
-        try{
+        try {
             response.success = true;
             response.communities = await this.communityRepository
                 .createQueryBuilder('community')
@@ -23,39 +34,43 @@ export class CommunityService{
                 .getMany();
             response.message = 'Comunidades obtenidas';
             return response;
-        }catch(err){
+        } catch (err) {
             response.success = false;
             response.message = err.message;
             return response;
         }
-        
+
     }
 
-    public async getOneCommunity(id: string){
+    public async getOneCommunity(id: string) {
         const response = new GetCommunityResponse();
-        try{
+        try {
             const find = await this.communityRepository.createQueryBuilder('community')
-            .leftJoinAndSelect('community.organization', 'organization')
-            .where('community.uuid = :id', { id })
-            .getOne();
-            if(find){
+                .leftJoinAndSelect('community.organization', 'organization')
+                .leftJoinAndSelect('community.communityMemberships', 'members')
+                .leftJoinAndSelect('members.user', 'user')
+                .leftJoinAndSelect('members.role', 'role')
+                .leftJoinAndSelect('user.person', 'person')
+                .where('community.uuid = :id', { id })
+                .getOne();
+            if (find) {
                 response.community = find;
                 response.success = true;
                 response.message = 'Comunidad encontrada';
                 return response;
-            }else{
+            } else {
                 response.success = false;
                 response.message = 'Comunidad no encontrada';
                 return response;
             }
-        }catch(err){
+        } catch (err) {
             response.success = false;
             response.message = 'Error al obtener la comunidad'
             return response;
         }
     }
 
-    public async addCommunity(request: AddCommunityRequest){
+    public async addCommunity(request: AddCommunityRequest) {
         const response = new AddCommunityResponse();
 
         const community = new Community();
@@ -64,14 +79,14 @@ export class CommunityService{
         community.public = request.public;
         community.password = request.password ?? null;
 
-        
-        try{
+
+        try {
             await this.communityRepository.save(community);
             response.community = community;
             response.success = true;
             response.message = 'Community created successfully';
             return response;
-        }catch(err){
+        } catch (err) {
             response.success = false;
             response.message = err.message;
             return response;
@@ -79,20 +94,95 @@ export class CommunityService{
     }
 
 
-    public async validateCreation(){
+    public async validateCreation() {
     }
 
-    public async getLogo(id: string){
+    public async getLogo(id: string) {
         const find = await this.communityRepository.findOne({
             where: {
                 uuid: id
             }
         });
 
-        if(find){
+        if (find) {
+            const file = createReadStream(join(process.cwd(), 'uploads\\organization', find.coverImage));
+            return new StreamableFile(file, {
+                type: 'image/png',
+                disposition: `attachment; filename="${find.coverImage}"`,
+            });
+        }else{
 
         }
     }
 
-    
+
+    public async join(id: string, user: string, password: string = null) {
+        const response = new JoinCommunityResponse();
+        const find = await this.communityRepository.findOne({
+            where: {
+                uuid: id
+            }
+        });
+
+        if (find) {
+            const validation = await this.membershipRepository.find({
+                where: [
+                    {
+                        community: find
+                    },
+                    {
+                        user: await this.userService.getUser(user)
+                    }
+                ]
+            });
+            if (validation.length > 0) {
+                response.success = false;
+                response.message = 'Ya eres miembro de esta comunidad';
+                response.joined = false;
+                return response;
+            } else {
+                const membership = new CommunityMembership();
+                membership.community = find;
+                membership.user = await this.userService.getUser(user);
+                membership.role = await this.roleService.getDefaultRole();
+                if (find.public == false && find.password != null) {
+                    if (password != null) {
+                        const comparision = await this.passwordService.comparePassword(password, find.password);
+
+                        if (comparision) {
+                            await this.membershipRepository.save(membership);
+                            response.success = true;
+                            response.joined = true;
+                            response.message = 'Te has unido a la comunidad';
+                            return response;
+                        } else {
+                            response.success = false;
+                            response.message = 'La clave de seguridad es incorrecta';
+                            response.joined = false;
+                            return response;
+                        }
+                    } else {
+                        response.success = false;
+                        response.message = 'Debes proporcionar la clave de seguridad';
+                        response.joined = false;
+                        return response;
+                    }
+                } else {
+                    await this.membershipRepository.save(membership);
+                    response.success = true;
+                    response.joined = true;
+                    response.message = 'Te has unido a la comunidad';
+                    return response;
+                }
+            }
+
+        } else {
+            response.success = false;
+            response.joined = false;
+            response.message = 'Comunidad no encontrada';
+            return response;
+        }
+    }
+
+
 }
