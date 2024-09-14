@@ -20,7 +20,7 @@ import { Person } from './modules/auth/person.entity';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: '.prod.env',
       expandVariables: true
     }),
     TypeOrmModule.forRootAsync({
