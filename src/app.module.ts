@@ -24,20 +24,14 @@ import { Person } from './modules/auth/person.entity';
       expandVariables: true
     }),
     TypeOrmModule.forRoot({
-      type: 'mssql',
-      host: 'localhost',
-      port: 1433,
-      username: 'sa',
-      password: 'admin123',
+      type: 'mysql',
+      host: 'mysql-contribuguate-contribuguate.j.aivencloud.com',
+      port: 22990,
+      username: 'avnadmin',
+      password: 'AVNS_nFk3f3t70HN3xxgSNiL',
       entities: [User, Person, Organization, Community, CommunityMembership, Role, Permission],
       synchronize: true,
-      database: 'contribuguate',
-      extra: {
-        trustServerCertificate: true
-      },
-      options: {
-        useUTC: true
-      }
+      database: 'defaultdb'
     }),
     AuthModule, 
     OrganizationModule, 
