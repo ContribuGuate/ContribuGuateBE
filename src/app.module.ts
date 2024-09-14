@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { HealthModule } from './modules/health/health.module';
@@ -23,21 +23,25 @@ import { Person } from './modules/auth/person.entity';
       envFilePath: '.env',
       expandVariables: true
     }),
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'mysql-contribuguate-contribuguate.j.aivencloud.com',
-      port: 22990,
-      username: 'avnadmin',
-      password: 'AVNS_nFk3f3t70HN3xxgSNiL',
-      entities: [User, Person, Organization, Community, CommunityMembership, Role, Permission],
-      synchronize: true,
-      database: 'defaultdb'
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (cfg: ConfigService) => ({
+        type: 'mysql',
+        host: cfg.get<string>('DB_HOST'),
+        port: cfg.get<number>('DB_PORT'),
+        username: cfg.get<string>('DB_USER'),
+        password: cfg.get<string>('DB_PASSWORD'),
+        entities: [User, Person, Organization, Community, CommunityMembership, Role, Permission],
+        synchronize: true,
+        database: 'defaultdb',
+      }),
+      inject: [ConfigService]
     }),
-    AuthModule, 
-    OrganizationModule, 
+    AuthModule,
+    OrganizationModule,
     HealthModule, CommunityModule, RoleModule, PermissionModule
   ],
   controllers: [],
   providers: [PasswordService]
 })
-export class AppModule {}
+export class AppModule { }
