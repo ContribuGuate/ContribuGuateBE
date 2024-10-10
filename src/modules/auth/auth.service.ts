@@ -18,11 +18,10 @@ export class AuthService {
 
     public async doLogin(request: LoginRequest) {
         const response = new LoginResponse()
-        const find = await this.userRepository.findOne({
-            where: {
-                email: request.email.toLowerCase()
-            }
-        });
+        const find = await this.userRepository.createQueryBuilder('user')
+        .leftJoinAndSelect('user.person', 'person')
+        .where('user.email = :email', { email: request.email.toLowerCase() })
+        .getOne();
 
         if (!find) {
             response.success = false;
@@ -92,13 +91,15 @@ export class AuthService {
                     person.secondsurname = request.secondsurname;
                     person.phone = request.phone;
                 }
+                
 
                 await this.personRepository.save(person);
 
                 var user = new User();
-                user.username = request.username;
+                user.username = request.username.toLowerCase();
                 user.email = request.email.toLowerCase();
                 user.password = await this.passwordService.hashPassword(request.password);
+                user.person = person;
                 await this.userRepository.save(user);
                 response.success = true;
                 response.message = 'Usuario creado correctamente';

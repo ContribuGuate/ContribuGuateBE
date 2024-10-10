@@ -26,10 +26,9 @@ export class Person{
     @Column({type: 'varchar', nullable: true})
     phone: string;
 
-    @Column({type: 'bit', default: false})
+    @Column({default: false})
     verified: boolean;
 
     @OneToOne(() => User, (user) => user.person)
-    @JoinColumn()
     user: User;
 }

@@ -14,7 +14,7 @@ async function bootstrap() {
   .setDescription('Contribuguate API para voluntarios y colectivos')
   .setVersion('1.0')
   .setLicense('MIT', 'https://github.com/emiliohernandezdev/contribuguate/blob/master/LICENSE')
-  .setContact('Emilio Hernandez', 'https://github.com/emiliohernandezdev', 's5wXG@example.com')
+  .setContact('Emilio Hernandez', 'https://github.com/emiliohernandezdev', 'emiliohernandezg7@icloud.com')
   .build();
 
   const document = SwaggerModule.createDocument(app, config);

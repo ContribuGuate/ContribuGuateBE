@@ -14,7 +14,7 @@ export class ExceptionsLoggerFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       success: false,
-      message: exception.message,
+      message: 'Error al procesar la peticion',
     });
   }
 }

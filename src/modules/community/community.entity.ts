@@ -17,8 +17,11 @@ export class Community{
     @Column({ type: 'varchar', length: 255, nullable: true })
     coverImage: string;
 
-    @Column({ type: 'bit', default: true })
+    @Column({ default: true })
     public: boolean;
+
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    code: string;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
     @Exclude()

@@ -1,7 +1,7 @@
 import { Injectable, StreamableFile } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Community } from "./community.entity";
-import { Repository } from "typeorm";
+import { Equal, Repository } from "typeorm";
 import { AddCommunityRequest } from "./dto/request/add-community.request";
 import { AddCommunityResponse } from "./dto/response/add-community.response";
 import { GetCommunitiesResponse } from "./dto/response/get-communities.response";
@@ -13,6 +13,7 @@ import { JoinCommunityResponse } from "./dto/response/join-community.response";
 import { CommunityMembership } from "./community-membership.entity";
 import { AuthService } from "../auth/auth.service";
 import { RoleService } from "../role/role.service";
+import { nanoid } from 'nanoid'
 
 @Injectable()
 export class CommunityService {
@@ -78,6 +79,7 @@ export class CommunityService {
         community.description = request.description;
         community.public = request.public;
         community.password = request.password ?? null;
+        community.code = nanoid(12)
 
 
         try {
@@ -125,17 +127,21 @@ export class CommunityService {
         });
 
         if (find) {
-            const validation = await this.membershipRepository.find({
+            const userFind = await this.userService.getUser(user);
+            const validation = await this.membershipRepository.findOne({
                 where: [
+                    {
+                        active: true
+                    },
                     {
                         community: find
                     },
                     {
-                        user: await this.userService.getUser(user)
+                        user: userFind
                     }
                 ]
             });
-            if (validation.length > 0) {
+            if (validation) {
                 response.success = false;
                 response.message = 'Ya eres miembro de esta comunidad';
                 response.joined = false;
@@ -143,7 +149,7 @@ export class CommunityService {
             } else {
                 const membership = new CommunityMembership();
                 membership.community = find;
-                membership.user = await this.userService.getUser(user);
+                membership.user = userFind;
                 membership.role = await this.roleService.getDefaultRole();
                 if (find.public == false && find.password != null) {
                     if (password != null) {

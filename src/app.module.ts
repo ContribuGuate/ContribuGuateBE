@@ -15,6 +15,7 @@ import { PermissionModule } from './modules/permission/permission.module';
 import { Role } from './modules/role/role.entity';
 import { Permission } from './modules/permission/permission.entity';
 import { Person } from './modules/auth/person.entity';
+import { PostModule } from './modules/post/post.module';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { Person } from './modules/auth/person.entity';
     }),
     AuthModule,
     OrganizationModule,
-    HealthModule, CommunityModule, RoleModule, PermissionModule
+    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule
   ],
   controllers: [],
   providers: [PasswordService]
