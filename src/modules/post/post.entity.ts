@@ -12,6 +12,6 @@ export class Post {
     @Column()
     content: string;
 
-    @Column({type: 'varchar', nullable: false, default: 'post', enum: ['post', 'comment', 'donation']})
+    @Column({type: 'varchar', default: 'post'})
     type: string;
 }
