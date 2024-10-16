@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { ExceptionsLoggerFilter } from './tools/error.filter';
 

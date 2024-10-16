@@ -4,7 +4,6 @@ import { Organization } from './organization.entity';
 import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
 import { JwtService } from '@nestjs/jwt';
-import { CommunityMembership } from '../community/community-membership.entity';
 
 @Module({
     imports: [

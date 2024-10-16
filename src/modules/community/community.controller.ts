@@ -35,13 +35,6 @@ export class CommunityController{
         return await this.communityService.getOneCommunity(id);
     }
 
-
-    @Get('logo/:id')
-    public async getLogo(@Param('id') id: string) {
-        return await this.communityService.getLogo(id);
-    }
-
-
     @UseGuards(AuthGuard)
     @Post('join')
     public async join(@Req() req: any, @Body() body: JoinCommunityRequest) {

@@ -17,6 +17,8 @@ import { Permission } from './modules/permission/permission.entity';
 import { Person } from './modules/auth/person.entity';
 import { PostModule } from './modules/post/post.module';
 import { Post } from './modules/post/post.entity';
+import { EventModule } from './modules/event/event.module';
+import { Event } from './modules/event/event.entity';
 
 @Module({
   imports: [
@@ -33,7 +35,7 @@ import { Post } from './modules/post/post.entity';
         port: cfg.get<number>('DB_PORT'),
         username: cfg.get<string>('DB_USER'),
         password: cfg.get<string>('DB_PASSWORD'),
-        entities: [User, Person, Organization, Community, CommunityMembership, Role, Permission, Post],
+        entities: [User, Person, Organization, Community, CommunityMembership, Role, Permission, Post, Event],
         synchronize: true,
         database: 'defaultdb',
       }),
@@ -41,7 +43,7 @@ import { Post } from './modules/post/post.entity';
     }),
     AuthModule,
     OrganizationModule,
-    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule
+    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule, EventModule
   ],
   controllers: [],
   providers: [PasswordService]

@@ -24,6 +24,9 @@ export class Organization {
     @Column({ type: 'text', nullable: true })
     address: string;
 
+    @Column({ type: 'tinyint', default: false })
+    approved: boolean;
+
     @OneToMany(() => Community, (community) => community.organization)
     communities: Community[];
 

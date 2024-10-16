@@ -80,13 +80,14 @@ export class CommunityService {
         community.public = request.public;
         community.password = request.password ?? null;
         community.code = nanoid(12)
+        community.coverImage = request.image ?? null;
 
 
         try {
             await this.communityRepository.save(community);
             response.community = community;
             response.success = true;
-            response.message = 'Community created successfully';
+            response.message = 'Comunidad creada con exito';
             return response;
         } catch (err) {
             response.success = false;

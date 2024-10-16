@@ -24,7 +24,7 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
           },
         },
         defaults: {
-          from: '"nest-modules" <modules@nestjs.com>',
+          from: '"contribuguate" <contribuguate@gmail.com>',
         },
         template: {
           dir: __dirname + '/templates',
