@@ -11,6 +11,7 @@ import { RegisterRequest } from './dto/request/register.request';
 import { LoginRequest } from './dto/request/login.request';
 import { MailerService } from '@nestjs-modules/mailer';
 import { BaseResponse } from 'src/core/http/BaseResponse';
+import { GetProfileResponse } from './dto/response/get-profile.response';
 
 @Injectable()
 export class AuthService {
@@ -22,18 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private mailerService: MailerService,
   ) {
-    this.mailerService
-      .sendMail({
-        to: 'emiliohernandezg7@icloud.com',
-        subject: 'Recuperacion de contraseña de acceso: Coffee App',
-        template: 'recover',
-      })
-      .then((e) => {
-        console.log(e);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
   }
 
   public async doLogin(request: LoginRequest) {
@@ -185,6 +175,26 @@ export class AuthService {
     } catch (err) {
       response.success = false;
       response.message = err.message;
+      return response
+    }
+  }
+
+  public async getProfile(req: any) {
+    var response = new GetProfileResponse()
+    const find = await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.person', 'person')
+      .where('user.uuid = :id', { id: req.user.sub })
+      .getOne()
+    
+
+    if(find){
+      response.profile = find
+      response.success = true
+      response.message = 'Usuario encontrado';
+      return response;
+    }else{
+      response.success = false
+      response.message = 'Usuario no encontrado';
       return response
     }
   }
