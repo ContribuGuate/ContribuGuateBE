@@ -19,7 +19,8 @@ import { PostModule } from './modules/post/post.module';
 import { Post } from './modules/post/post.entity';
 import { EventModule } from './modules/event/event.module';
 import { Event } from './modules/event/event.entity';
-
+import {ThrottlerModule} from '@nestjs/throttler';
+import { OrganizationHistory } from './modules/organization/organization-history.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +28,10 @@ import { Event } from './modules/event/event.entity';
       envFilePath: '.prod.env',
       expandVariables: true
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60,
+      limit: 20,
+    }]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (cfg: ConfigService) => ({
@@ -35,7 +40,7 @@ import { Event } from './modules/event/event.entity';
         port: cfg.get<number>('DB_PORT'),
         username: cfg.get<string>('DB_USER'),
         password: cfg.get<string>('DB_PASSWORD'),
-        entities: [User, Person, Organization, Community, CommunityMembership, Role, Permission, Post, Event],
+        entities: [User, Person, Organization, OrganizationHistory, Community, CommunityMembership, Role, Permission, Post, Event],
         synchronize: true,
         database: 'defaultdb',
       }),

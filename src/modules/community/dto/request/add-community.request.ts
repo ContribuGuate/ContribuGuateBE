@@ -1,4 +1,4 @@
-import { IsBoolean, IsBooleanString, IsNotEmpty, IsString, IsUrl } from "class-validator";
+import { IsBoolean, IsBooleanString, IsNotEmpty, IsString, IsUrl, IsUUID } from "class-validator";
 
 export class AddCommunityRequest{
 
@@ -16,4 +16,8 @@ export class AddCommunityRequest{
     image: string;
 
     password: string;
+
+    @IsUUID()
+    @IsString()
+    organization: string;
 }

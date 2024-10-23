@@ -14,12 +14,14 @@ import { CommunityMembership } from "./community-membership.entity";
 import { AuthService } from "../auth/auth.service";
 import { RoleService } from "../role/role.service";
 import { nanoid } from 'nanoid'
+import { Organization } from "../organization/organization.entity";
 
 @Injectable()
 export class CommunityService {
 
     constructor(@InjectRepository(Community) private readonly communityRepository: Repository<Community>,
         @InjectRepository(CommunityMembership) private readonly membershipRepository: Repository<CommunityMembership>,
+        @InjectRepository(Organization) private readonly organizationRepository: Repository<Organization>,
         private readonly passwordService: PasswordService,
         private readonly userService: AuthService,
         private readonly roleService: RoleService) { }
@@ -71,19 +73,47 @@ export class CommunityService {
         }
     }
 
+    public async getByCode(code: string) {
+        var response = new GetCommunityResponse();
+        try {
+            const find = await this.communityRepository.createQueryBuilder('community')
+                .leftJoinAndSelect('community.organization', 'organization')
+                .where('community.code = :code', { code })
+                .getOne();
+            if (find) {
+                response.community = find;
+                response.success = true;
+                response.message = 'Comunidad encontrada';
+                return response;
+            } else {
+                response.success = false;
+                response.message = 'Comunidad no encontrada';
+                return response;
+            }
+        } catch (err) {
+            response.success = false;
+            response.message = 'Error al obtener la comunidad'
+            return response;
+        }
+    }
+
     public async addCommunity(request: AddCommunityRequest) {
         const response = new AddCommunityResponse();
 
-        const community = new Community();
-        community.name = request.name;
-        community.description = request.description;
-        community.public = request.public;
-        community.password = request.password ?? null;
-        community.code = nanoid(12)
-        community.coverImage = request.image ?? null;
-
 
         try {
+            const community = new Community();
+            community.name = request.name;
+            community.description = request.description;
+            community.public = request.public;
+            community.password = request.password ?? null;
+            community.code = nanoid(12)
+            community.coverImage = request.image ?? null;
+            community.organization = await this.organizationRepository.findOne({
+                where: {
+                    uuid: request.organization
+                }
+            });
             await this.communityRepository.save(community);
             response.community = community;
             response.success = true;
@@ -113,7 +143,7 @@ export class CommunityService {
                 type: 'image/png',
                 disposition: `attachment; filename="${find.coverImage}"`,
             });
-        }else{
+        } else {
 
         }
     }

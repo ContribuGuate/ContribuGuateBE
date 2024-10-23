@@ -10,7 +10,10 @@ export class Post {
     title: string;
 
     @Column()
-    content: string;
+    description: string;
+
+    @Column()
+    image: string
 
     @Column({type: 'varchar', default: 'post'})
     type: string;

@@ -21,4 +21,9 @@ export class OrganizationController {
     public async getOrganization(@Param('id') id: string) {
         return await this.organizationService.getOrganization(id);
     }
+
+    @Get('tracking/:id')
+    public async getOrganizationTracking(@Param("id") id: string){
+        return await this.organizationService.getOrganizationTracking(id);
+    }
 }

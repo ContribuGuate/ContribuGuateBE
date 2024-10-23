@@ -11,10 +11,11 @@ import { User } from '../auth/user.entity';
 import { Person } from '../auth/person.entity';
 import { RoleService } from '../role/role.service';
 import { Role } from '../role/role.entity';
+import { Organization } from '../organization/organization.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Community, CommunityMembership, User, Person, Role])
+        TypeOrmModule.forFeature([Community, CommunityMembership, Organization, User, Person, Role])
     ],
     controllers: [CommunityController],
     providers: [CommunityService, JwtService, PasswordService, AuthService, RoleService]

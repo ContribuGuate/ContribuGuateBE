@@ -4,7 +4,6 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ExceptionsLoggerFilter } from './tools/error.filter';
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -39,7 +38,7 @@ async function bootstrap() {
 
   await app.listen(port)
   .then(() => {
-    Logger.log(`Server running on port ${port}`, "Http - Application");
+    Logger.log(`Server running on port ${port}`, "Application");
   })
   .catch((err) => {
     Logger.error(err, "Http - Application");

@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, Index, Unique, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Index, Unique, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne } from 'typeorm';
 import { Community } from '../community/community.entity';
+import { OrganizationHistory } from './organization-history.entity';
 
 @Entity()
 export class Organization {
@@ -29,6 +30,9 @@ export class Organization {
 
     @OneToMany(() => Community, (community) => community.organization)
     communities: Community[];
+
+    @OneToMany(() => OrganizationHistory, (history) => history.organization)
+    history: OrganizationHistory[];
 
     @CreateDateColumn()
     createdAt: Date;

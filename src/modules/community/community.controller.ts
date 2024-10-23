@@ -4,6 +4,7 @@ import { AddCommunityRequest } from "./dto/request/add-community.request";
 import { AuthGuard } from "src/tools/auth.guard";
 import { JoinCommunityResponse } from "./dto/response/join-community.response";
 import { JoinCommunityRequest } from "./dto/request/join-community.request";
+import { JoinCommunityWithCodeRequest } from "./dto/request/join-with-code.request";
 
 @Controller('community')
 export class CommunityController{
@@ -35,9 +36,22 @@ export class CommunityController{
         return await this.communityService.getOneCommunity(id);
     }
 
+    @Get("code/:code")
+    @UseInterceptors(ClassSerializerInterceptor)
+    public async getByCode(@Param("code") code: string){
+        return await this.communityService.getByCode(code);
+    }
+
     @UseGuards(AuthGuard)
     @Post('join')
     public async join(@Req() req: any, @Body() body: JoinCommunityRequest) {
         return await this.communityService.join(body.uuid, req['user'].sub, body.password);
+    }
+
+
+    @UseGuards(AuthGuard)
+    @Post('join/code')
+    public async joinWithCode(@Req() req: any, @Body() body: JoinCommunityWithCodeRequest) {
+
     }
 }
