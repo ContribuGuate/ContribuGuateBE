@@ -32,7 +32,7 @@ async function bootstrap() {
   // app.use(helmet());
 
   const configService = new ConfigService();
-  const port = process.env.PORT || configService.getOrThrow<number>('APP_PORT', 3000);
+  const port = process.env.PORT || configService.get<number>('APP_PORT') || 3000;
 
   app.useGlobalFilters(new ExceptionsLoggerFilter());
 
