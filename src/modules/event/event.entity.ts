@@ -1,6 +1,6 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn,OneToMany } from "typeorm";
 import { Community } from "../community/community.entity";
-
+import { History } from "../history/history.entity";
 @Entity()
 export class Event{
     @PrimaryGeneratedColumn('uuid')
@@ -26,4 +26,7 @@ export class Event{
 
     @ManyToOne(() => Community, (community) => community.events, { nullable: true })
     community: Community;
+
+    @OneToMany(() => History, (history) => history.evento)
+    histories: History[];
 }

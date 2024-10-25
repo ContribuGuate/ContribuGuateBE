@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToOne,OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Person } from "./person.entity";
+import { History } from "../history/history.entity";
 
 @Entity()
 export class User{
@@ -24,6 +25,10 @@ export class User{
     @OneToOne(() => Person, (person) => person.user)
     @JoinColumn()
     person: Person;
+
+    @OneToMany(() => History, (history) => history.usuario)  // Decorador OneToMany para la relación con History
+    histories: History[];
+
 
     @CreateDateColumn()
     createdAt: Date;

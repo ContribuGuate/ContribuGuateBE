@@ -21,6 +21,8 @@ import { EventModule } from './modules/event/event.module';
 import { Event } from './modules/event/event.entity';
 import {ThrottlerModule} from '@nestjs/throttler';
 import { OrganizationHistory } from './modules/organization/organization-history.entity';
+import { HistoryModule } from './modules/history/history.module';
+import { History } from './modules/history/history.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,7 +42,7 @@ import { OrganizationHistory } from './modules/organization/organization-history
         port: cfg.get<number>('DB_PORT'),
         username: cfg.get<string>('DB_USER'),
         password: cfg.get<string>('DB_PASSWORD'),
-        entities: [User, Person, Organization, OrganizationHistory, Community, CommunityMembership, Role, Permission, Post, Event],
+        entities: [User, Person, Organization, OrganizationHistory, Community, CommunityMembership, Role, Permission, Post, Event,History ],
         synchronize: true,
         database: 'defaultdb',
       }),
@@ -48,7 +50,7 @@ import { OrganizationHistory } from './modules/organization/organization-history
     }),
     AuthModule,
     OrganizationModule,
-    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule, EventModule
+    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule, EventModule, HistoryModule,HistoryModule
   ],
   controllers: [],
   providers: [PasswordService]
