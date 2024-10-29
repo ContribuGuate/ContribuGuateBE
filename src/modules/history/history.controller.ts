@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards, Logger } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UseGuards, Logger, Req} from "@nestjs/common";
 import { HistoryService } from "./history.service";
 import { CreateHistoryRequest } from "./dto/create-history.request";
 import { AuthGuard } from "src/tools/auth.guard";
@@ -17,9 +17,10 @@ export class HistoryController {
     }
 
     @UseGuards(AuthGuard)
-    @Get('user/:usuarioId')
-    public async getHistoriesByUser(@Param('usuarioId') usuarioId: string) {
-        this.logger.log(`Mapped {/history/user/${usuarioId}, GET} route`);
+    @Get('user')
+    public async getHistoriesByUser(@Req() req: any) {
+        const usuarioId = req.user.sub; 
+        this.logger.log(`Mapped {/history/user, GET} route with user ID: ${usuarioId}`);
         return this.historyService.getHistoriesByUser(usuarioId);
     }
 }
