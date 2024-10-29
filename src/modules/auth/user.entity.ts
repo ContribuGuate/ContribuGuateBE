@@ -26,7 +26,7 @@ export class User{
     @JoinColumn()
     person: Person;
 
-    @OneToMany(() => History, (history) => history.usuario)  // Decorador OneToMany para la relación con History
+    @OneToMany(() => History, (history) => history.usuario)
     histories: History[];
 
 

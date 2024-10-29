@@ -3,6 +3,7 @@ import { Organization } from "../organization/organization.entity";
 import { CommunityMembership } from "./community-membership.entity";
 import { Exclude } from 'class-transformer';
 import { Event } from "../event/event.entity";
+import { Post } from "../post/post.entity";
 @Entity()
 export class Community{
 
@@ -39,6 +40,9 @@ export class Community{
 
     @OneToMany(() => Event, event => event.community)
     events: Event[];
+
+    @OneToMany(() => Post, post => post.community)
+    posts: Event[];
 
     @CreateDateColumn()
     createdAt: Date;
