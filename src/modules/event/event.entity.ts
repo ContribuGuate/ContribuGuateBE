@@ -15,13 +15,13 @@ export class Event{
     @Column({ type: 'varchar', length: 255, nullable: true })
     address: string;
 
-    @Column({ type: 'timestamp'})
+    @Column({ type: 'timestamp', nullable: false})
     date: Date;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
     link: string;
 
-    @Column({ type: 'varchar', length: 255, nullable: true })
+    @Column({ type: 'varchar', length: 255, nullable: false })
     image: string;
 
     @ManyToOne(() => Community, (community) => community.events, { nullable: true })

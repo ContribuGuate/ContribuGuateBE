@@ -17,6 +17,8 @@ export class AddEventRequest{
 
     link: string;
 
+    @IsString()
+    @IsNotEmpty()
     image: string;
 
     community: string;

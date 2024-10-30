@@ -23,6 +23,7 @@ import {ThrottlerModule} from '@nestjs/throttler';
 import { OrganizationHistory } from './modules/organization/organization-history.entity';
 import { HistoryModule } from './modules/history/history.module';
 import { History } from './modules/history/history.entity';
+import { PostReaction } from './modules/post/post-reaction.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,9 +43,9 @@ import { History } from './modules/history/history.entity';
         port: cfg.get<number>('DB_PORT'),
         username: cfg.get<string>('DB_USER'),
         password: cfg.get<string>('DB_PASSWORD'),
-        entities: [User, Person, Organization, OrganizationHistory, Community, CommunityMembership, Role, Permission, Post, Event,History ],
+        entities: [User, Person, Organization, OrganizationHistory, Community, CommunityMembership, Role, Permission, Post, PostReaction, Event,History ],
         synchronize: true,
-        database: 'defaultdb',
+        database: 'defaultdb'
       }),
       inject: [ConfigService]
     }),
