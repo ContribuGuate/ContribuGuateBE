@@ -9,15 +9,9 @@ export class Post {
     @PrimaryGeneratedColumn('uuid')
     uuid: string;
 
-    @Column({ type: 'varchar', length: 255, nullable: false })
-    title: string;
-
-    @Column({ type: 'text', nullable: false })
+    @Column({ type: 'longtext', nullable: false })
     description: string;
-
-    @Column({ type: 'varchar', length: 255, nullable: true })
-    image: string
-
+    
     @Column({type: 'varchar', default: 'post', enum: ['post', 'donation', 'goal', 'request']})
     type: string;
 

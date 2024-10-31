@@ -23,13 +23,9 @@ export class PostService {
         try {
             var post = new Post();
             post.description = body.description;
-            post.title = body.title;
             post.type = body.type;
             post.author = await this.userRepo.findOne({ where: { uuid: req.user.sub } });
-            if (body.image != null) {
-                post.image = body.image;
-            }
-
+            
             if (body.community != null) {
                 const community = await this.communityRepository.findOne({ where: { uuid: body.community } });
                 post.community = community;
@@ -40,6 +36,7 @@ export class PostService {
             response.post = save;
             return response;
         } catch (err) {
+            console.log(err);
             response.success = false;
             response.message = err.message;
             return response;
@@ -56,6 +53,8 @@ export class PostService {
         try {
             const posts = await this.postRepository.createQueryBuilder('post')
                 .leftJoinAndSelect('post.author', 'author')
+                .leftJoinAndSelect('post.reactions', 'reactions')
+                .leftJoinAndSelect('reactions.user', 'user')
                 .getMany();
 
             response.success = true;

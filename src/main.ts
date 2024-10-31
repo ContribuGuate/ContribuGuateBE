@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ExceptionsLoggerFilter } from './tools/error.filter';
+import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -25,6 +26,8 @@ async function bootstrap() {
   }
   SwaggerModule.setup('api', app, document, options);
 
+  app.use(express.json({ limit: '10mb' })); // Cambia '10mb' según tus necesidades
+  app.use(express.urlencoded({ limit: '10mb', extended: true })); // Cambia '10mb' según tus necesidades
 
   app.enableCors();
   
