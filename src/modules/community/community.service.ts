@@ -151,28 +151,21 @@ export class CommunityService {
 
     public async join(id: string, user: string, password: string = null) {
         const response = new JoinCommunityResponse();
-        const find = await this.communityRepository.findOne({
-            where: {
-                uuid: id
-            }
-        });
+        const find = await this.communityRepository.createQueryBuilder('community')
+            .leftJoinAndSelect('community.organization', 'organization')
+            .where('community.uuid = :id', { id })
+            .getOne();
 
         if (find) {
             const userFind = await this.userService.getUser(user);
-            const validation = await this.membershipRepository.findOne({
-                where: [
-                    {
-                        active: true
-                    },
-                    {
-                        community: find
-                    },
-                    {
-                        user: userFind
-                    }
-                ]
-            });
-            if (validation) {
+            const val = await this.membershipRepository.createQueryBuilder('membership')
+                .leftJoinAndSelect('membership.user', 'user')
+                .where('membership.communityUuid = :community', { community: find.uuid })
+                .andWhere('membership.user = :user', { user: userFind.uuid })
+                .andWhere('membership.active = :active', { active: true })
+                .getOne();
+
+            if (val) {
                 response.success = false;
                 response.message = 'Ya eres miembro de esta comunidad';
                 response.joined = false;
