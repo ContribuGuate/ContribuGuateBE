@@ -24,6 +24,7 @@ import { OrganizationHistory } from './modules/organization/organization-history
 import { HistoryModule } from './modules/history/history.module';
 import { History } from './modules/history/history.entity';
 import { PostReaction } from './modules/post/post-reaction.entity';
+import {CommunityMembershipModule} from './modules/community/community-membership.module'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -51,7 +52,7 @@ import { PostReaction } from './modules/post/post-reaction.entity';
     }),
     AuthModule,
     OrganizationModule,
-    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule, EventModule, HistoryModule,HistoryModule
+    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule, EventModule, HistoryModule,HistoryModule,CommunityMembershipModule
   ],
   controllers: [],
   providers: [PasswordService]
