@@ -24,12 +24,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private mailerService: MailerService,
   ) {
-    this.passwords();
   }
 
   public async passwords(){
-    Logger.log(await this.passwordService.hashPassword('Superuser'));
-    Logger.log(await this.passwordService.hashPassword('ContribuGT123@'));
   }
 
   public async generateUsers(cant: number){

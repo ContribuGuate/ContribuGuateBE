@@ -39,6 +39,7 @@ export class CommunityService {
             response.communities = await this.communityRepository
                 .createQueryBuilder('community')
                 .leftJoinAndSelect('community.organization', 'organization')
+                .orderBy('community.createdAt', 'DESC')
                 .getMany();
             response.message = 'Comunidades obtenidas';
             return response;

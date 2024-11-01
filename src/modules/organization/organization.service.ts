@@ -16,11 +16,11 @@ export class OrganizationService {
     public async getAllOrganization() {
         const response = new GetOrganizationsResponse();
         try{
-            const find = await this.organizationRepository.find({
-                where: {
-                    approved: true
-                }
-            });
+            const find = await this.organizationRepository.createQueryBuilder('organization')
+            .where('organization.approved = :approved', { approved: true })
+            .orderBy('organization.createdAt', 'DESC')
+            .getMany();
+            
             response.organizations = find;
             response.success = true;
             response.message = 'Organizaciones encontradas';
