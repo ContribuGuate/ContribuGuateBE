@@ -15,10 +15,17 @@ export class CommunityMembershipController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete('remove/:communityId')
-  public async removeCommunityMembership(@Req() req: any, @Param('communityId') communityId: string) {
+  @Delete('remove/:uuid')
+  public async removeCommunityMembershipByUuid(@Param('uuid') uuid: string) {
+    console.log(`Mapped {/community-memberships/remove/${uuid}, DELETE} route`);
+    return this.communityMembershipService.removeCommunityMembershipByUuid(uuid);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('non-member-communities')
+  public async getNonMemberCommunities(@Req() req: any) {
     const userId = req.user.sub;
-    console.log(`Mapped {/community-memberships/remove/${communityId}, DELETE} route with user ID: ${userId}`);
-    return this.communityMembershipService.removeCommunityMembership(userId, communityId);
+    console.log(`Fetching non-member communities for user ID: ${userId}`);
+    return this.communityMembershipService.getNonMemberCommunities(userId);
   }
 }
