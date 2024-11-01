@@ -15,16 +15,21 @@ import { AuthService } from "../auth/auth.service";
 import { RoleService } from "../role/role.service";
 import { nanoid } from 'nanoid'
 import { Organization } from "../organization/organization.entity";
+import { faker } from '@faker-js/faker';
+import { User } from "../auth/user.entity";
 
 @Injectable()
 export class CommunityService {
 
     constructor(@InjectRepository(Community) private readonly communityRepository: Repository<Community>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(CommunityMembership) private readonly membershipRepository: Repository<CommunityMembership>,
         @InjectRepository(Organization) private readonly organizationRepository: Repository<Organization>,
         private readonly passwordService: PasswordService,
         private readonly userService: AuthService,
-        private readonly roleService: RoleService) { }
+        private readonly roleService: RoleService) { 
+            this.createRandomMembers()
+        }
 
     public async getAllCommunity() {
         const response = new GetCommunitiesResponse();
@@ -97,7 +102,7 @@ export class CommunityService {
         }
     }
 
-    public async addCommunity(request: AddCommunityRequest) {
+    public async addCommunity(req: any, request: AddCommunityRequest) {
         const response = new AddCommunityResponse();
 
 
@@ -118,6 +123,16 @@ export class CommunityService {
             response.community = community;
             response.success = true;
             response.message = 'Comunidad creada con exito';
+
+
+            //crear membership que el usuario que agrega sera admin
+            const creation = new CommunityMembership();
+            creation.community = community;
+            creation.user = await this.userService.getUser(req.user.sub);
+            creation.role = await this.roleService.getAdminRole();
+            creation.active = true;
+            await this.membershipRepository.save(creation);
+
             return response;
         } catch (err) {
             response.success = false;
@@ -214,5 +229,26 @@ export class CommunityService {
         }
     }
 
+
+    public async createRandomMembers() {
+        const communities = await this.communityRepository.find();
+        const users = await this.userRepo.find();
+        const roleService = this.roleService;
+    
+        for (const community of communities) {
+            const numMembers = Math.floor(Math.random() * 30) + 1; // Número de miembros aleatorio entre 1 y 10
+            for (let i = 0; i < numMembers; i++) {
+                const user = users[Math.floor(Math.random() * users.length)];
+                const role = await roleService.getDefaultRole();
+    
+                const membership = new CommunityMembership();
+                membership.community = community;
+                membership.user = user;
+                membership.role = role;
+    
+                await this.membershipRepository.save(membership);
+            }
+        }
+    }
 
 }

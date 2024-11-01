@@ -55,6 +55,7 @@ export class PostService {
                 .leftJoinAndSelect('post.author', 'author')
                 .leftJoinAndSelect('post.reactions', 'reactions')
                 .leftJoinAndSelect('reactions.user', 'user')
+                .orderBy('post.createdAt', 'DESC')
                 .getMany();
 
             response.success = true;

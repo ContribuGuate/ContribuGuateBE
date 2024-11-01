@@ -11,12 +11,13 @@ export class CommunityController{
 
     constructor(private readonly communityService: CommunityService){}
 
-    @Post('add')
-    public async addCommunity(@Body() body: AddCommunityRequest){
-        return await this.communityService.addCommunity(body);
-    }
 
-    @UseInterceptors(ClassSerializerInterceptor)
+    @UseGuards(AuthGuard)
+    @Post('add')
+    public async addCommunity(@Req() req: any, @Body() body: AddCommunityRequest){
+        return await this.communityService.addCommunity(req, body);
+    }
+    
     @Get("all")
     public async getCommunities(){
         return await this.communityService.getAllCommunity();

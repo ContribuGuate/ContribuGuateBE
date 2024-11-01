@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -12,6 +12,7 @@ import { LoginRequest } from './dto/request/login.request';
 import { MailerService } from '@nestjs-modules/mailer';
 import { BaseResponse } from 'src/core/http/BaseResponse';
 import { GetProfileResponse } from './dto/response/get-profile.response';
+import { faker } from '@faker-js/faker';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,35 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private mailerService: MailerService,
   ) {
+    this.passwords();
+  }
 
+  public async passwords(){
+    Logger.log(await this.passwordService.hashPassword('Superuser'));
+    Logger.log(await this.passwordService.hashPassword('ContribuGT123@'));
+  }
+
+  public async generateUsers(cant: number){
+    for (let index = 0; index < cant; index++) {
+      const person = new Person();
+      person.cui = faker.number.int({ min: 1000000000, max: 9999999999 }).toString();
+      person.firstname = faker.person.firstName();
+      person.secondname = faker.person.firstName();
+      person.surname = faker.person.lastName();
+      person.secondsurname = faker.person.lastName();
+      person.phone = faker.phone.number({style: 'international'})
+      person.verified = true;
+
+      await this.personRepository.save(person);
+
+      const user = new User();
+      user.email = faker.internet.email();
+      user.username = faker.internet.username();
+      user.password = await this.passwordService.hashPassword('Admin123@');
+      user.person = person;
+
+      await this.userRepository.save(user);
+    }
   }
 
   public async doLogin(request: LoginRequest) {

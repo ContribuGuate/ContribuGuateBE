@@ -13,7 +13,7 @@ export class Community{
     @Column({ type: 'varchar', length: 255, nullable: false })
     name: string;
 
-    @Column({ type: 'varchar', nullable: true })
+    @Column({ type: 'text', nullable: true })
     description: string;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
