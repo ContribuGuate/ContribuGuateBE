@@ -10,6 +10,11 @@ export class PostController{
     constructor(private readonly postService: PostService){}
     
 
+    @Get()
+    public async getCommunityPosts(){
+        return await this.postService.getCommunityPosts();
+    }
+
     @UseGuards(AuthGuard)
     @Post()
     public async addPost(@Req() req: any,@Body() body: AddPostRequest){

@@ -102,6 +102,28 @@ export class PostService {
         }
     }
 
+    public async getCommunityPosts(){
+        var response = new GetPostsResponse();
+        try{
+            const posts = await this.postRepository.createQueryBuilder('post')
+            .leftJoinAndSelect('post.author', 'author')
+            .leftJoinAndSelect('post.reactions', 'reactions')
+            .leftJoinAndSelect('reactions.user', 'user')
+            .leftJoinAndSelect('post.community', 'community')
+            .where('post.community IS NOT NULL')
+            .orderBy('post.createdAt', 'DESC')
+            .getMany();
+            response.success = true;
+            response.message = 'Posts encontrados';
+            response.posts = posts;
+            return response;
+        }catch(err){
+            response.success = false;
+            response.message = err.message;
+            return response;
+        }
+    }
+
     public async addReaction(req: any, body: AddReactionRequest) {
         var response = new AddReactionResponse();
         try {

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Community } from "./community.entity";
 import { User } from "../auth/user.entity";
 import { Role } from "../role/role.entity";
@@ -19,4 +19,10 @@ export class CommunityMembership{
 
     @Column({ type: 'tinyint', default: true })
     active: boolean;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

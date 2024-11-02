@@ -14,10 +14,12 @@ export class CommunityMembershipService {
     private communityRepository: Repository<Community>, // Agregamos CommunityRepository para la consulta de comunidades
   ) {}
   async getCommunitiesByUser(userId: string): Promise<{ uuid: string, community: Community }[]> {
-    const memberships = await this.communityMembershipRepository.find({
-      where: { user: { uuid: userId }, active: true },
-      relations: ['community'],
-    });
+    const memberships = await this.communityMembershipRepository.createQueryBuilder('membership')
+    .leftJoinAndSelect('membership.community', 'community')
+    .where('membership.user = :userId', { userId })
+    .andWhere('membership.active = :active', { active: true })
+    .orderBy('membership.createdAt', 'DESC')
+    .getMany();
   
     // Filter unique communities and retain the membership UUID
     const uniqueCommunities = Array.from(
