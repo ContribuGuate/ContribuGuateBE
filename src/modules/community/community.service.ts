@@ -28,7 +28,6 @@ export class CommunityService {
         private readonly passwordService: PasswordService,
         private readonly userService: AuthService,
         private readonly roleService: RoleService) { 
-            this.createRandomMembers()
         }
 
     public async getAllCommunity() {
@@ -39,6 +38,8 @@ export class CommunityService {
             response.communities = await this.communityRepository
                 .createQueryBuilder('community')
                 .leftJoinAndSelect('community.organization', 'organization')
+                .leftJoinAndSelect('community.communityMemberships', 'members')
+                .leftJoinAndSelect('members.user', 'user')
                 .orderBy('community.createdAt', 'DESC')
                 .getMany();
             response.message = 'Comunidades obtenidas';
@@ -57,6 +58,8 @@ export class CommunityService {
             const find = await this.communityRepository.createQueryBuilder('community')
                 .leftJoinAndSelect('community.organization', 'organization')
                 .leftJoinAndSelect('community.communityMemberships', 'members')
+                .leftJoinAndSelect('community.posts', 'posts')
+                .leftJoinAndSelect('posts.author', 'author')
                 .leftJoinAndSelect('members.user', 'user')
                 .leftJoinAndSelect('members.role', 'role')
                 .leftJoinAndSelect('user.person', 'person')
@@ -78,6 +81,24 @@ export class CommunityService {
             return response;
         }
     }
+    
+    public async getUserCommunities(user: string) {
+        var response = new GetCommunitiesResponse();
+
+        response.success = true;
+        response.communities = await this.communityRepository
+            .createQueryBuilder('community')
+            .leftJoinAndSelect('community.organization', 'organization')
+            .leftJoinAndSelect('community.communityMemberships', 'members')
+            .leftJoinAndSelect('members.user', 'user')
+            .leftJoinAndSelect('members.role', 'role')
+            .leftJoinAndSelect('user.person', 'person')
+            .where('members.user = :user', { user })
+            .getMany();
+        response.message = 'Comunidades encontradas';
+        return response;
+    }
+
 
     public async getByCode(code: string) {
         var response = new GetCommunityResponse();

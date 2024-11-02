@@ -12,8 +12,6 @@ export class Post {
     @Column({ type: 'longtext', nullable: false })
     description: string;
     
-    @Column({type: 'varchar', default: 'post', enum: ['post', 'donation', 'goal', 'request']})
-    type: string;
 
     @ManyToOne(() => Community, (community) => community.events, { nullable: true })
     @JoinColumn()

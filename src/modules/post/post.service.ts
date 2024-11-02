@@ -16,14 +16,45 @@ export class PostService {
     constructor(@InjectRepository(Post) private readonly postRepository: Repository<Post>,
         @InjectRepository(PostReaction) private readonly postReactionRepo: Repository<PostReaction>,
         @InjectRepository(Community) private readonly communityRepository: Repository<Community>,
-        @InjectRepository(User) private readonly userRepo: Repository<User>) { }
+        @InjectRepository(User) private readonly userRepo: Repository<User>) { 
+            
+        }
+
+    
+        public async randomReactions() {
+            const posts = await this.postRepository.find();
+            const users = await this.userRepo.find();
+            const reactions = ['love', 'inspire', 'like'];
+        
+            for (const post of posts) {
+                const user = users[Math.floor(Math.random() * users.length)];
+                const reaction = reactions[Math.floor(Math.random() * reactions.length)];
+        
+                // Verificar si ya existe una reacción para este post y usuario
+                const existingReaction = await this.postReactionRepo.findOne({
+                    where: {
+                        post: post,
+                        user: user,
+                    },
+                });
+        
+                if (!existingReaction) {
+                    const newReaction = new PostReaction();
+                    newReaction.post = post;
+                    newReaction.user = user;
+                    newReaction.reaction = reaction;
+        
+                    await this.postReactionRepo.save(newReaction);
+                }
+            }
+        }
+
 
     public async addPost(req: any, body: AddPostRequest) {
         var response = new AddPostResponse();
         try {
             var post = new Post();
             post.description = body.description;
-            post.type = body.type;
             post.author = await this.userRepo.findOne({ where: { uuid: req.user.sub } });
             
             if (body.community != null) {
@@ -55,6 +86,8 @@ export class PostService {
                 .leftJoinAndSelect('post.author', 'author')
                 .leftJoinAndSelect('post.reactions', 'reactions')
                 .leftJoinAndSelect('reactions.user', 'user')
+                .leftJoinAndSelect('post.community', 'community')
+                .where('post.community IS NULL')
                 .orderBy('post.createdAt', 'DESC')
                 .getMany();
 

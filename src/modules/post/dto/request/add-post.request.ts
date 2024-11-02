@@ -6,10 +6,6 @@ export class AddPostRequest{
     @IsNotEmpty()
     description: string;
 
-    @IsString()
-    @IsNotEmpty()
-    type: string;
-
 
     community: string;
 }

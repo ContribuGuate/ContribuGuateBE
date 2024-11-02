@@ -11,6 +11,11 @@ export class CommunityController{
 
     constructor(private readonly communityService: CommunityService){}
 
+    @UseGuards(AuthGuard)
+    @Get()
+    public async getUserCommunities(@Req() req: any){
+        return await this.communityService.getUserCommunities(req['user'].sub);
+    }
 
     @UseGuards(AuthGuard)
     @Post('add')
