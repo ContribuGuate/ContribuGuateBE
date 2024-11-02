@@ -14,15 +14,21 @@ import { CommunityMembership } from "./community-membership.entity";
 import { AuthService } from "../auth/auth.service";
 import { RoleService } from "../role/role.service";
 import { nanoid } from 'nanoid'
+import { Organization } from "../organization/organization.entity";
+import { faker } from '@faker-js/faker';
+import { User } from "../auth/user.entity";
 
 @Injectable()
 export class CommunityService {
 
     constructor(@InjectRepository(Community) private readonly communityRepository: Repository<Community>,
+    @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(CommunityMembership) private readonly membershipRepository: Repository<CommunityMembership>,
+        @InjectRepository(Organization) private readonly organizationRepository: Repository<Organization>,
         private readonly passwordService: PasswordService,
         private readonly userService: AuthService,
-        private readonly roleService: RoleService) { }
+        private readonly roleService: RoleService) { 
+        }
 
     public async getAllCommunity() {
         const response = new GetCommunitiesResponse();
@@ -32,6 +38,9 @@ export class CommunityService {
             response.communities = await this.communityRepository
                 .createQueryBuilder('community')
                 .leftJoinAndSelect('community.organization', 'organization')
+                .leftJoinAndSelect('community.communityMemberships', 'members')
+                .leftJoinAndSelect('members.user', 'user')
+                .orderBy('community.createdAt', 'DESC')
                 .getMany();
             response.message = 'Comunidades obtenidas';
             return response;
@@ -49,6 +58,8 @@ export class CommunityService {
             const find = await this.communityRepository.createQueryBuilder('community')
                 .leftJoinAndSelect('community.organization', 'organization')
                 .leftJoinAndSelect('community.communityMemberships', 'members')
+                .leftJoinAndSelect('community.posts', 'posts')
+                .leftJoinAndSelect('posts.author', 'author')
                 .leftJoinAndSelect('members.user', 'user')
                 .leftJoinAndSelect('members.role', 'role')
                 .leftJoinAndSelect('user.person', 'person')
@@ -70,23 +81,80 @@ export class CommunityService {
             return response;
         }
     }
+    
+    public async getUserCommunities(user: string) {
+        var response = new GetCommunitiesResponse();
 
-    public async addCommunity(request: AddCommunityRequest) {
+        response.success = true;
+        response.communities = await this.communityRepository
+            .createQueryBuilder('community')
+            .leftJoinAndSelect('community.organization', 'organization')
+            .leftJoinAndSelect('community.communityMemberships', 'members')
+            .leftJoinAndSelect('members.user', 'user')
+            .leftJoinAndSelect('members.role', 'role')
+            .leftJoinAndSelect('user.person', 'person')
+            .where('members.user = :user', { user })
+            .getMany();
+        response.message = 'Comunidades encontradas';
+        return response;
+    }
+
+
+    public async getByCode(code: string) {
+        var response = new GetCommunityResponse();
+        try {
+            const find = await this.communityRepository.createQueryBuilder('community')
+                .leftJoinAndSelect('community.organization', 'organization')
+                .where('community.code = :code', { code })
+                .getOne();
+            if (find) {
+                response.community = find;
+                response.success = true;
+                response.message = 'Comunidad encontrada';
+                return response;
+            } else {
+                response.success = false;
+                response.message = 'Comunidad no encontrada';
+                return response;
+            }
+        } catch (err) {
+            response.success = false;
+            response.message = 'Error al obtener la comunidad'
+            return response;
+        }
+    }
+
+    public async addCommunity(req: any, request: AddCommunityRequest) {
         const response = new AddCommunityResponse();
-
-        const community = new Community();
-        community.name = request.name;
-        community.description = request.description;
-        community.public = request.public;
-        community.password = request.password ?? null;
-        community.code = nanoid(12)
 
 
         try {
+            const community = new Community();
+            community.name = request.name;
+            community.description = request.description;
+            community.public = request.public;
+            community.password = request.password ?? null;
+            community.code = nanoid(12)
+            community.coverImage = request.image ?? null;
+            community.organization = await this.organizationRepository.findOne({
+                where: {
+                    uuid: request.organization
+                }
+            });
             await this.communityRepository.save(community);
             response.community = community;
             response.success = true;
-            response.message = 'Community created successfully';
+            response.message = 'Comunidad creada con exito';
+
+
+            //crear membership que el usuario que agrega sera admin
+            const creation = new CommunityMembership();
+            creation.community = community;
+            creation.user = await this.userService.getUser(req.user.sub);
+            creation.role = await this.roleService.getAdminRole();
+            creation.active = true;
+            await this.membershipRepository.save(creation);
+
             return response;
         } catch (err) {
             response.success = false;
@@ -112,7 +180,7 @@ export class CommunityService {
                 type: 'image/png',
                 disposition: `attachment; filename="${find.coverImage}"`,
             });
-        }else{
+        } else {
 
         }
     }
@@ -120,28 +188,21 @@ export class CommunityService {
 
     public async join(id: string, user: string, password: string = null) {
         const response = new JoinCommunityResponse();
-        const find = await this.communityRepository.findOne({
-            where: {
-                uuid: id
-            }
-        });
+        const find = await this.communityRepository.createQueryBuilder('community')
+            .leftJoinAndSelect('community.organization', 'organization')
+            .where('community.uuid = :id', { id })
+            .getOne();
 
         if (find) {
             const userFind = await this.userService.getUser(user);
-            const validation = await this.membershipRepository.findOne({
-                where: [
-                    {
-                        active: true
-                    },
-                    {
-                        community: find
-                    },
-                    {
-                        user: userFind
-                    }
-                ]
-            });
-            if (validation) {
+            const val = await this.membershipRepository.createQueryBuilder('membership')
+                .leftJoinAndSelect('membership.user', 'user')
+                .where('membership.communityUuid = :community', { community: find.uuid })
+                .andWhere('membership.user = :user', { user: userFind.uuid })
+                .andWhere('membership.active = :active', { active: true })
+                .getOne();
+
+            if (val) {
                 response.success = false;
                 response.message = 'Ya eres miembro de esta comunidad';
                 response.joined = false;
@@ -190,5 +251,26 @@ export class CommunityService {
         }
     }
 
+
+    public async createRandomMembers() {
+        const communities = await this.communityRepository.find();
+        const users = await this.userRepo.find();
+        const roleService = this.roleService;
+    
+        for (const community of communities) {
+            const numMembers = Math.floor(Math.random() * 30) + 1; // Número de miembros aleatorio entre 1 y 10
+            for (let i = 0; i < numMembers; i++) {
+                const user = users[Math.floor(Math.random() * users.length)];
+                const role = await roleService.getDefaultRole();
+    
+                const membership = new CommunityMembership();
+                membership.community = community;
+                membership.user = user;
+                membership.role = role;
+    
+                await this.membershipRepository.save(membership);
+            }
+        }
+    }
 
 }

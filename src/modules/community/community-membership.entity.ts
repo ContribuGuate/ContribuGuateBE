@@ -17,6 +17,6 @@ export class CommunityMembership{
     @ManyToOne(() => Role, { nullable: false })
     role: Role;
 
-    @Column({ type: 'bit', default: true })
+    @Column({ type: 'tinyint', default: true })
     active: boolean;
 }

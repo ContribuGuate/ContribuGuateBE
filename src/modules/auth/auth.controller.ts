@@ -1,8 +1,9 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { LoginRequest } from "./dto/request/login.request";
 import { RegisterRequest } from "./dto/request/register.request";
 import { RecoverRequest } from "./dto/request/recover.request";
+import { AuthGuard } from "src/tools/auth.guard";
 
 @Controller('auth')
 export class AuthController{
@@ -21,5 +22,11 @@ export class AuthController{
     @Post('recover')
     public async recoverPassword(@Body() body: RecoverRequest){
         return this.authService.recoverPassword(body.email);
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('profile')
+    public async getProfile(@Req() req: any){
+        return await this.authService.getProfile(req);
     }
 }

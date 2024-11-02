@@ -19,8 +19,12 @@ import { PostModule } from './modules/post/post.module';
 import { Post } from './modules/post/post.entity';
 import { EventModule } from './modules/event/event.module';
 import { Event } from './modules/event/event.entity';
-import { DonationModule } from './modules/donation/donation.module';
-
+import {ThrottlerModule} from '@nestjs/throttler';
+import { OrganizationHistory } from './modules/organization/organization-history.entity';
+import { HistoryModule } from './modules/history/history.module';
+import { History } from './modules/history/history.entity';
+import { PostReaction } from './modules/post/post-reaction.entity';
+import {CommunityMembershipModule} from './modules/community/community-membership.module'
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +32,10 @@ import { DonationModule } from './modules/donation/donation.module';
       envFilePath: '.prod.env',
       expandVariables: true
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60,
+      limit: 20,
+    }]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (cfg: ConfigService) => ({
@@ -36,16 +44,15 @@ import { DonationModule } from './modules/donation/donation.module';
         port: cfg.get<number>('DB_PORT'),
         username: cfg.get<string>('DB_USER'),
         password: cfg.get<string>('DB_PASSWORD'),
-        entities: [User, Person, Organization, Community, CommunityMembership,
-           Role, Permission, Post, Event],
+        entities: [User, Person, Organization, OrganizationHistory, Community, CommunityMembership, Role, Permission, Post, PostReaction, Event,History ],
         synchronize: true,
-        database: 'defaultdb',
+        database: 'defaultdb'
       }),
       inject: [ConfigService]
     }),
     AuthModule,
     OrganizationModule,
-    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule, EventModule, DonationModule
+    HealthModule, CommunityModule, RoleModule, PermissionModule, PostModule, EventModule, HistoryModule,HistoryModule,CommunityMembershipModule
   ],
   controllers: [],
   providers: [PasswordService]

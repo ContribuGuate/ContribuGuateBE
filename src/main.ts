@@ -2,10 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import helmet from 'helmet';
 import { ConfigService } from '@nestjs/config';
 import { ExceptionsLoggerFilter } from './tools/error.filter';
-
+import * as express from 'express';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -27,6 +26,8 @@ async function bootstrap() {
   }
   SwaggerModule.setup('api', app, document, options);
 
+  app.use(express.json({ limit: '10mb' })); // Cambia '10mb' según tus necesidades
+  app.use(express.urlencoded({ limit: '10mb', extended: true })); // Cambia '10mb' según tus necesidades
 
   app.enableCors();
   
@@ -34,13 +35,13 @@ async function bootstrap() {
   // app.use(helmet());
 
   const configService = new ConfigService();
-  const port = process.env.PORT || configService.getOrThrow<number>('APP_PORT', 3000);
+  const port = process.env.PORT || configService.get<number>('APP_PORT') || 3000;
 
   app.useGlobalFilters(new ExceptionsLoggerFilter());
 
   await app.listen(port)
   .then(() => {
-    Logger.log(`Server running on port ${port}`, "Http - Application");
+    Logger.log(`Server running on port ${port}`, "Application");
   })
   .catch((err) => {
     Logger.error(err, "Http - Application");

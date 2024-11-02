@@ -2,6 +2,8 @@ import { Column, CreateDateColumn, Entity, Index, ManyToOne, OneToMany, PrimaryG
 import { Organization } from "../organization/organization.entity";
 import { CommunityMembership } from "./community-membership.entity";
 import { Exclude } from 'class-transformer';
+import { Event } from "../event/event.entity";
+import { Post } from "../post/post.entity";
 @Entity()
 export class Community{
 
@@ -11,7 +13,7 @@ export class Community{
     @Column({ type: 'varchar', length: 255, nullable: false })
     name: string;
 
-    @Column({ type: 'varchar', nullable: true })
+    @Column({ type: 'text', nullable: true })
     description: string;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
@@ -22,6 +24,9 @@ export class Community{
 
     @Column({ type: 'varchar', length: 255, nullable: true })
     code: string;
+
+    @Column({ type: 'varchar', length: 255, nullable: true })
+    donationLink: string;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
     @Exclude()
@@ -35,6 +40,12 @@ export class Community{
 
     @OneToMany(() => CommunityMembership, member => member.community)
     communityMemberships: CommunityMembership[];
+
+    @OneToMany(() => Event, event => event.community)
+    events: Event[];
+
+    @OneToMany(() => Post, post => post.community)
+    posts: Event[];
 
     @CreateDateColumn()
     createdAt: Date;

@@ -1,4 +1,4 @@
-import {IsString, IsNotEmpty, IsBoolean} from 'class-validator'
+import {IsString, IsNotEmpty, IsBoolean, IsUrl} from 'class-validator'
 
 export class AddOrganizationRequest {
     @IsString()
@@ -14,6 +14,10 @@ export class AddOrganizationRequest {
     @IsString()
     @IsNotEmpty()
     contact: string
+
+    @IsString()
+    @IsUrl()
+    image: string;
 
 
     address: string

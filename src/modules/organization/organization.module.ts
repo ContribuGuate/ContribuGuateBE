@@ -4,11 +4,11 @@ import { Organization } from './organization.entity';
 import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
 import { JwtService } from '@nestjs/jwt';
-import { CommunityMembership } from '../community/community-membership.entity';
+import { OrganizationHistory } from './organization-history.entity';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([Organization]),
+        TypeOrmModule.forFeature([Organization, OrganizationHistory]),
     ],
     controllers: [
         OrganizationController

@@ -1,5 +1,8 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToOne,OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Person } from "./person.entity";
+import { History } from "../history/history.entity";
+import { Post } from "../post/post.entity";
+import { PostReaction } from "../post/post-reaction.entity";
 
 @Entity()
 export class User{
@@ -25,12 +28,20 @@ export class User{
     @JoinColumn()
     person: Person;
 
+    @OneToMany(() => History, (history) => history.usuario)
+    histories: History[];
+
+    @OneToMany(() => PostReaction, (postReact) => postReact.reaction)
+    reactions: PostReaction[];
+
     @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
     updatedAt: Date;
     
+    @OneToMany(() => Post, (post) => post.author) // Relación con Post
+    posts: Post[]; // Añadido para establecer la relación
 
     // constructor(partial: Partial<User>) {
     //     Object.assign(this, partial);
