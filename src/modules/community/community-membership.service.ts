@@ -13,15 +13,23 @@ export class CommunityMembershipService {
     @InjectRepository(Community)
     private communityRepository: Repository<Community>, // Agregamos CommunityRepository para la consulta de comunidades
   ) {}
-
-  // Método para obtener las comunidades a las que pertenece el usuario
-  async getCommunitiesByUser(userId: string): Promise<CommunityMembership[]> {
-    return this.communityMembershipRepository.find({
+  async getCommunitiesByUser(userId: string): Promise<{ uuid: string, community: Community }[]> {
+    const memberships = await this.communityMembershipRepository.find({
       where: { user: { uuid: userId }, active: true },
       relations: ['community'],
     });
+  
+    // Filter unique communities and retain the membership UUID
+    const uniqueCommunities = Array.from(
+      new Map(memberships.map((membership) => [membership.community.uuid, membership])).values()
+    ).map((membership) => ({
+      uuid: membership.uuid,
+      community: membership.community,
+    }));
+  
+    return uniqueCommunities;
   }
-
+  
   // Método para eliminar la membresía de una comunidad por UUID
   async removeCommunityMembershipByUuid(uuid: string): Promise<{ success: boolean; message: string }> {
     const membership = await this.communityMembershipRepository.findOne({
