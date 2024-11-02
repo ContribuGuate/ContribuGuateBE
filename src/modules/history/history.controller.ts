@@ -12,7 +12,6 @@ export class HistoryController {
     
     @Post('create')
     public async createHistory(@Body() body: CreateHistoryRequest) {
-        this.logger.log('Mapped {/history/create, POST} route');
         return this.historyService.createHistory(body);
     }
 
@@ -20,7 +19,6 @@ export class HistoryController {
     @Get('user')
     public async getHistoriesByUser(@Req() req: any) {
         const usuarioId = req.user.sub; 
-        this.logger.log(`Mapped {/history/user, GET} route with user ID: ${usuarioId}`);
         return this.historyService.getHistoriesByUser(usuarioId);
     }
 }
