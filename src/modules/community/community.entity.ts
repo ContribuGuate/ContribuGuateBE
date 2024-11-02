@@ -32,9 +32,6 @@ export class Community{
     @Exclude()
     password: string;
 
-    @Column({type: 'varchar', length: 255, nullable: true})
-    donationLink: string;
-
     @ManyToOne(() => Organization, organization => organization.communities, { nullable: false })
     organization: Organization;
 
